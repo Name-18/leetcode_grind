@@ -1,9 +1,9 @@
-// Last updated: 6/22/2026, 3:50:52 PM
+// Last updated: 6/22/2026, 3:51:17 PM
 1class Solution {
 2public:
 3    int maxNumberOfBalloons(string text) {
 4        
-5        map<char,int> mpp;
+5        unordered_map<char,int> mpp;
 6         mpp['l']=0;;
 7        mpp['o']=0;
 8         mpp['b']=0;
