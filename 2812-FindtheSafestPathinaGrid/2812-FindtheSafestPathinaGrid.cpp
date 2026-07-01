@@ -1,4 +1,4 @@
-// Last updated: 7/1/2026, 4:42:09 PM
+// Last updated: 7/1/2026, 4:42:50 PM
 1class Solution {
 2public:
 3    bool check(int x, vector<vector<int>>& grd, int n) {
@@ -74,7 +74,7 @@
 73        }
 74
 75        int low = 0;
-76        int high = min(grd[0][0], grd[n - 1][n - 1]);
+76        int high =1e9;
 77
 78        while (low <= high) {
 79            int mid = low + (high - low) / 2;
