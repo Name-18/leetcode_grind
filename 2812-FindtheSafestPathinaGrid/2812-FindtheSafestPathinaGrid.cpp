@@ -1,72 +1,91 @@
-// Last updated: 7/1/2026, 4:52:41 PM
+// Last updated: 7/1/2026, 4:54:18 PM
 1class Solution {
-2public:
-3    vector<int> roww = {0,0,-1,1};
-4    vector<int> coll = {-1,1,0,0};
+2    using p = pair<int,pair<int,int>>;
+3public:
+4    bool check(int x , vector<vector<int>> &grd,int n){
 5
-6    void bfs(vector<vector<int>>& grid,vector<vector<int>>& score,int n) {
-7        queue<pair<int, int>> q;
-8        //finding all the thieves
-9        for(int i = 0; i < n; i++) {
-10            for(int j = 0; j < n; j++){
-11                if(grid[i][j]) {
-12                    score[i][j] = 0;
-13                    q.push({i, j});
-14                }
-15            }
-16        }
-17        //bfs from every thief to find distance from nearest thief
-18        while(!q.empty()){
-19            auto t = q.front();
-20            q.pop();
-21
-22            int x = t.first, y = t.second;
-23            int s = score[x][y];
-24
-25            for(int i =0; i < 4; i++){
-26                int newX = x + roww[i];
-27                int newY = y + coll[i];
-28
-29                if(newX >= 0 && newX < n && newY >= 0 && newY < n && score[newX][newY] > 1 + s) { 
-30
-31                    score[newX][newY] = 1 + s;
-32                    q.push({newX, newY});
-33                }
-34            }
-35        }
-36    }
-37
-38    int maximumSafenessFactor(vector<vector<int>>& grid) {
-39        int n = grid.size();
-40        if(grid[0][0] || grid[n - 1][n - 1]) return 0;
-41
-42        vector<vector<int>> score(n,vector<int>(n,INT_MAX));
-43        bfs(grid, score, n);
-44        vector<vector<bool>> vis(n, vector<bool>(n, false));
+6        if(grd[0][0]  < x) return false;
+7        if(grd[n-1][n-1] < x) return false;
+8   vector<vector<bool>> vis(n,vector<bool> (n,false));
+9        queue<pair<int,int>> q;
+10        q.push({0,0});
+11  vis[0][0]=1;
+12      int dr[4]={0,1,0,-1};
+13      int dy[4]={1,0,-1,0};
+14        while(!q.empty()){
+15 
+16           auto it = q.front();
+17            q.pop();
+18                 
+19                 if( it.first == n-1 and it.second ==n-1) return true;
+20                    for(int i=0;i<4;i++){
+21            int nx = it.first + dr[i];
+22            int ny = it.second + dy[i];
+23                  
+24                 if(nx>=0 and nx < n and ny>=0 and ny<n){
+25                     
+26                     if(vis[nx][ny]==false and grd[nx][ny] >=x ){
+27                        vis[nx][ny] = true;
+28                        q.push({nx,ny});
+29                     } 
+30                 }  
+31                    }
+32        }
+33
+34        return vis[n-1][n-1]==1;
+35    }
+36    int maximumSafenessFactor(vector<vector<int>>& grid) {
+37        int n = grid.size();
+38        
+39         
+40         vector<vector<int>> grd(n,vector<int> (n,1e9));
+41         queue<p> q;
+42
+43         for(int i=0;i<n;i++){
+44            for(int j=0;j<n;j++){
 45
-46        priority_queue<pair<int,pair<int,int>>> pq;
-47        pq.push({score[0][0], {0,0}});
-48 vis[0][0] = true;
-49        while(!pq.empty()){
-50            auto temp = pq.top().second;
-51            auto safe = pq.top().first;
-52            pq.pop();
-53
-54            if(temp.first == n - 1 && temp.second == n - 1) return safe;
-55           
-56
-57            for(int i = 0; i < 4; i++) {
-58                int newX = temp.first + roww[i];
-59                int newY = temp.second + coll[i];
-60
-61                if(newX >= 0 && newX < n && newY >= 0 && newY < n && !vis[newX][newY]){
-62                    int s = min(safe, score[newX][newY]);
-63                    pq.push({s, {newX, newY}});
-64                    vis[newX][newY] = true;
-65                }
-66            }
-67        }
-68
-69        return -1;
-70    }
-71};
+46                if(grid[i][j]==1){
+47                    q.push({0,{i,j}});
+48                    grd[i][j]=0;
+49                }
+50            }
+51         }
+52
+53      int dr[4]={0,1,0,-1};
+54      int dy[4]={1,0,-1,0};
+55       while(!q.empty()){
+56      
+57        auto it = q.front();
+58        q.pop();
+59        if(it.first > grd[it.second.first][it.second.second ]) continue;
+60        for(int i=0;i<4;i++){
+61            int nx = it.second.first + dr[i];
+62            int ny = it.second.second + dy[i];
+63
+64            if(nx>=0 and nx < n and ny>=0 and ny<n){
+65                if(grd[nx][ny]==1e9){
+66                    grd[nx][ny] = it.first+1;
+67                    q.push({it.first+1,{nx,ny}});
+68                }
+69            }
+70        }
+71       }
+72       
+73       int low = 0;
+74       int high = 1e9;
+75
+76       while(low<=high){
+77
+78        int mid = (high - low )/2 + low ;
+79
+80        if(check(mid,grd,n)) {
+81            low = mid+1;
+82        }else{
+83           high = mid-1;
+84        }
+85
+86        
+87       }return high;
+88
+89    }
+90};
