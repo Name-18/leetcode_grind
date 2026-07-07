@@ -1,35 +1,36 @@
-// Last updated: 7/7/2026, 4:25:48 PM
+// Last updated: 7/7/2026, 4:38:45 PM
 1class Solution {
 2public:
-3  string s1,s2;
-4  vector<vector<int>> dp;
-5    bool is(int i,int j){ 
-6       if(i==-1 ){
-7        while(j!=-1){
-8        if(s2[j]!='*') return false;
-9
-10          j--;
-11        }
-12      
-13        return  true;
-14       }
-15       if(j==-1 ) return i==-1;
-16       if(dp[i+1][j+1]!=-1){
-17return dp[i+1][j+1];
-18         }
-19        if(s1[i]==s2[j]) return dp[i+1][j+1]= is(i-1,j-1);
-20
-21        else if( s2[j]=='?' ) return dp[i+1][j+1]=is(i-1,j-1);
-22
-23        else if(s2[j]=='*') return  dp[i+1][j+1]=is(i-1,j) or is(i,j-1) ; 
-24
-25        return dp[i+1][j+1]=false;
+3string s,p;
+4vector<vector<int>> dp;
+5    bool func(int i,int j){
+6         
+7        
+8         if(i==s.size()){
+9            while(j<p.size()){
+10                if(p[j]=='*') j++;
+11                else return false;
+12            }
+13            return true;
+14         }
+15
+16         if(dp[i][j]!=-1) return dp[i][j];
+17         bool first = false;
+18         if(i< s.size() and (s[i] == p[j]  or p[j]=='?')){
+19            first = true;
+20         }
+21
+22         if(p[j] == '*'){
+23            return  dp[i][j] =func(i,j+1) or func(i+1,j);
+24         }
+25          return  dp[i][j] =first && func(i+1,j+1);
 26    }
 27    bool isMatch(string s, string p) {
-28        s1 = s;
-29        s2=p;
-30        dp.assign(s1.size()+1,vector<int> (s2.size()+1,-1));
-31       return  is(s1.size()-1,s2.size()-1);
-32
-33    }
-34};
+28        this->s =s;
+29        this->p= p;
+30        int n=s.size();
+31        int m=p.size();
+32        dp.assign(n+1,vector<int> (m+1,-1));
+33        return func(0,0);
+34    }
+35};
