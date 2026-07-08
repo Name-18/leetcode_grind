@@ -1,84 +1,61 @@
-// Last updated: 7/8/2026, 1:15:03 PM
-1class SegmentTree {
-2private:
-3    struct Node {
-4        long long x, sum;
-5        int len;
-6        Node(long long _x = 0, long long _sum = 0, int _len = 0) 
-7            : x(_x), sum(_sum), len(_len) {}
-8    };
-9
-10    string data;
-11    int n;
-12    vector<Node> tree;
-13    vector<long long> pow;
-14    const long long mod = 1000000007;
-15
-16    Node merge(const Node& left, const Node& right) {
-17        long long x = (left.x * pow[right.len] % mod + right.x) % mod;
-18        long long sum = (left.sum + right.sum) % mod;
-19        int len = left.len + right.len;
-20        return Node(x, sum, len);
-21    }
-22
-23    void build(int node, int l, int r) {
-24        if (l == r) {
-25            long long digit = data[l] - '0';
-26            if (digit == 0) {
-27                tree[node] = Node();
-28            } else {
-29                tree[node] = Node(digit, digit, 1);
-30            }
-31            return;
-32        }
-33        int mid = (l + r) / 2;
-34        build(2 * node, l, mid);
-35        build(2 * node + 1, mid + 1, r);
-36        tree[node] = merge(tree[2 * node], tree[2 * node + 1]);
-37    }
-38
-39    Node query(int node, int l, int r, int ql, int qr) {
-40        if (l > qr || r < ql) return Node();
-41        if (ql <= l && r <= qr) {
-42            return tree[node];
-43        }
-44        int mid = (l + r) / 2;
-45        Node left = query(2 * node, l, mid, ql, qr);
-46        Node right = query(2 * node + 1, mid + 1, r, ql, qr);
-47        return merge(left, right);
-48    }
-49
-50public:
-51    SegmentTree(string& s) {
-52        data = s;
-53        n = s.length();
-54        tree.resize(4 * n);
-55        pow.resize(n + 1);
-56        
-57        pow[0] = 1;
-58        for (int i = 0; i < n; ++i) {
-59            pow[i + 1] = (pow[i] * 10) % mod;
-60        }
-61        build(1, 0, n - 1);
-62    }
-63
-64    int query(int start, int end) {
-65        Node node = query(1, 0, n - 1, start, end);
-66        return (int)((node.x * node.sum) % mod);
-67    }
-68};
-69
-70class Solution {
-71public:
-72    vector<int> sumAndMultiply(string s, vector<vector<int>>& queries) {
-73        SegmentTree tree(s);
-74        vector<int> res;
-75        res.reserve(queries.size());
-76        
-77        for (const auto& q : queries) {
-78            res.push_back(tree.query(q[0], q[1]));
-79        }
-80        return res;
-81    }
-82};
-83
+// Last updated: 7/8/2026, 7:52:30 PM
+1class Solution {
+2public:
+3const int mod= 1e9+7;
+4    vector<int> sumAndMultiply(string s, vector<vector<int>>& queries) {
+5         int n = s.size();
+6        vector<long long > pref(n);
+7        vector<long long> pref_s(n);
+8        vector<int> dig(n);
+9        vector<long long> power(n+1,1);
+10
+11        for(int i=1;i<=n;i++){
+12            power[i] =  (power[i-1]*10)%mod;
+13        }
+14        long long summ =0;
+15        long long numb =0;
+16        int d =0;
+17
+18        for(int i=0;i<n;i++){
+19
+20            int num = s[i]-'0';
+21            summ+= num;
+22            summ %= mod;
+23            if(num==0){
+24            dig[i] = d;
+25            pref[i] = numb;
+26            pref_s[i]= summ;
+27            }else{
+28                  d+=1;
+29
+30                  numb*=10;
+31                  numb %=mod;
+32                  numb += num;
+33                  numb %= mod;
+34                     dig[i] = d;
+35            pref[i] = numb;
+36            pref_s[i]= summ;
+37            }
+38        }
+39  vector<int> res;
+40        for(auto it : queries){
+41            int r = it[1];
+42            int l = it[0];
+43
+44
+45
+46            if(l>0){
+47                  
+48                  int d = dig[r] - dig[l-1];
+49                  long long a = (pref[r] - (1LL*(pref[l-1])*power[d])%mod + mod)% mod;
+50                  a = (a  * ((pref_s[r] - pref_s[l-1] + mod)%mod)) % mod;
+51        res.push_back(a);
+52            }else{
+53                    long long a = (1LL* pref[r] * pref_s[r]);
+54                    a %= mod;
+55                        res.push_back(a);
+56            }
+57        }
+58        return res;
+59    }
+60};
