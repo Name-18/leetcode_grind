@@ -1,26 +1,33 @@
-// Last updated: 7/12/2026, 12:53:25 PM
+// Last updated: 7/12/2026, 1:10:25 PM
 1class Solution {
 2public:
-3    vector<int> arrayRankTransform(vector<int>& arr) {
-4        vector<int> a(arr.begin(),arr.end());
-5
-6        sort(a.begin(),a.end());
-7          map<int,int> mpp;
-8          int cnt = 1;
-9        for(auto &it : a){
-10
-11            if(mpp.find(it)==mpp.end()){
-12                 mpp[it] = cnt ;
-13                 cnt ++;
+3     int func(vector<int> &arr , int x ){
+4
+5           int low = 0 ;
+6           int high =  arr.size()-1;
+7
+8           while(low <= high){
+9
+10            int mid = (low+high)/2 ; 
+11
+12            if(arr[mid] < x ){
+13                high = mid-1;
 14            }else{
-15        continue;
-16            }
-17        }
-18        vector<int> res;
-19        for(auto &it :  arr){
-20            res.push_back(mpp[it]);
-21        }
-22
-23        return res;
-24    }
-25};
+15                low = mid+1;
+16
+17            }
+18           }
+19          return high ;
+20     }
+21    int maxDistance(vector<int>& nums1, vector<int>& nums2) {
+22        int ans = 0;
+23         for(int i=0;i<nums1.size();i++){
+24            int j = func(nums2,nums1[i]);
+25
+26            if(j>=i){
+27                ans = max(ans, j-i);
+28            }
+29         }
+30         return ans;
+31    }
+32};
