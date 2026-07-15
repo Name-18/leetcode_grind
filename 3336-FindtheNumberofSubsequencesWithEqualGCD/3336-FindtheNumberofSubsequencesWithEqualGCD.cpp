@@ -1,65 +1,44 @@
-// Last updated: 7/15/2026, 3:22:13 AM
+// Last updated: 7/15/2026, 3:34:42 PM
 1class Solution {
-2    static constexpr int MOD = 1000000007;
-3    static constexpr int LIM = 201;
-4
-5    static inline int μ[LIM];
-6    static inline int lcms[LIM][LIM];
-7    static inline int pow2[LIM], pow3[LIM];
-8
-9    static inline int init = [] {
-10        for (int i = 1; i < LIM; i++)
-11            for (int j = 1; j < LIM; j++)
-12                lcms[i][j] = ::lcm(i, j);
-13
-14        pow2[0] = pow3[0] = 1;
-15
-16        for (int i = 1; i < LIM; i++) {
-17            pow2[i] = (pow2[i - 1] * 2) % MOD;
-18            pow3[i] = ((long long)pow3[i - 1] * 3) % MOD;
-19        }
-20
-21        μ[1] = 1;
-22        for (int i = 1; i < LIM; i++)
-23            for (int j = i * 2; j < LIM; j += i)
-24                μ[j] -= μ[i];
+2public:
+3  vector<int> nums;
+4  int dp[201][202][202];
+5  int mod = 1e9+7;
+6    int func(int idx , int seq1 , int seq2){
+7          
+8          if(idx == nums.size()){
+9            return seq1 == seq2 and seq1 != -1; 
+10          }
+11         
+12         if(dp[idx][seq1+1][seq2+1] != -1) return dp[idx][seq1+1][seq2+1];
+13        long long nt = func(idx+1,seq1,seq2);
+14        long long take1 = 0;
+15        int t = seq1;
+16        int t2 = seq2;
+17        if(seq1 == -1){
+18            seq1 = nums[idx];
+19        }else{
+20            seq1 = __gcd(seq1,nums[idx]);
+21        }
+22         take1 =  func(idx+1,seq1 ,seq2);
+23         
+24        long long take2 =0 ;
 25
-26        return false;
-27    }();
-28
-29public:
-30    int subsequencePairCount(vector<int>& nums) {
-31        int mx = *std::max_element(nums.begin(), nums.end());
+26        if(seq2 == -1){
+27            seq2 = nums[idx];
+28        }
+29        else{
+30            seq2 = __gcd(seq2,nums[idx]);
+31        }
 32
-33        vector<int> count(mx + 1);
-34
-35        for (int n : nums)
-36            count[n]++;
-37
-38        for (int i = 1; i <= mx; i++)
-39            for (int j = i * 2; j <= mx; j += i)
-40                count[i] += count[j];
-41
-42        vector<vector<int>> dp(mx + 1, vector<int>(mx + 1));
-43        for (int i = 1; i <= mx; i++) {
-44            for (int j = 1; j <= mx; j++) {
-45                int l = lcms[i][j];
-46                int c = 0;
-47                if (l <= mx) c = count[l];                
-48                
-49                int ci = count[i];
-50                int cj = count[j];
-51                dp[i][j] = ((long long)pow3[c] * pow2[ci + cj - c * 2] - pow2[ci] - pow2[cj] + 1) % MOD;
-52            }
-53        }
-54
-55        long long res = 0;
-56
-57        for (int i = 1; i <= mx; i++)
-58            for (int j = 1; j <= mx / i; j++)
-59                for (int k = 1; k <= mx / i; k++)
-60                    res += (long long)μ[j] * μ[k] * dp[j * i][k * i];
-61
-62        return (res % MOD + MOD) % MOD;
-63    }
-64};
+33        take2 = func(idx+1 , t ,seq2);
+34        long long ans =  nt+take1+take2;
+35        ans %= mod;
+36        return  dp[idx][t+1][t2+1] = ans;
+37    }
+38    int subsequencePairCount(vector<int>& nums) {
+39        this->nums = nums;
+40       memset(dp,-1,sizeof(dp));
+41        return func(0,-1,-1);
+42    }
+43};
