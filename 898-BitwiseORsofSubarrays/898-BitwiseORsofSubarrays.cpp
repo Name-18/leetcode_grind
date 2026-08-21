@@ -1,16 +1,16 @@
-// Last updated: 8/21/2026, 5:20:15 PM
+// Last updated: 8/21/2026, 5:21:37 PM
 1class Solution {
 2public:
 3    int subarrayBitwiseORs(vector<int>& arr) {
 4        
-5        map<int,int> mpp;
+5        unordered_map<int,int> mpp;
 6       int n =  arr.size();
 7        mpp[arr[n-1]]=1;
 8        set<int> st;
 9        st.insert(arr[n-1]);
 10        for(int  i = n-2;i>=0;i--){
 11
-12           map<int,int> n_map;
+12           unordered_map<int,int> n_map;
 13           for(auto it : mpp){
 14            
 15            int val = it.first;
