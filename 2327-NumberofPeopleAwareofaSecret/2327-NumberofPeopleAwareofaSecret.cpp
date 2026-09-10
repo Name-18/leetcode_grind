@@ -1,4 +1,4 @@
-// Last updated: 9/10/2026, 1:23:11 PM
+// Last updated: 9/10/2026, 1:26:45 PM
 1class Solution {
 2public:
 3int mod = 1e9+7;
@@ -15,7 +15,7 @@
 14                      vec[j] %= mod;
 15
 16            }
-17            cout<<vec[i] << " ";
+17           
 18        }
 19        
 20        long long sum = 0;
