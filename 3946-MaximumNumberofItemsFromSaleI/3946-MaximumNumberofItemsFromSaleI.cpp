@@ -1,33 +1,59 @@
-// Last updated: 9/14/2026, 1:42:33 PM
+// Last updated: 9/14/2026, 1:44:38 PM
 1class Solution {
 2public:
-3   vector<vector<int>> vec;
-4   int mini;
-5    int fnc(int i , int bud  , vector<int> & copis,vector<vector<int>>& items){
-6       
-7        if(i<0)return bud/mini;
-8        if(vec[i][bud]!=-1) return vec[i][bud];
-9        int ans = fnc(i-1,bud,copis,items);
-10        int prices=items[i][1];
-11        if(bud>=prices){
-12            int take = copis[i] + fnc(i-1,bud-prices,copis,items);
-13            ans = max(ans,take); 
-14        }
-15        return vec[i][bud]=  ans;
-16    }
-17    int maximumSaleItems(vector<vector<int>>& items, int budget) {
-18        vector<int> copis(items.size(),0);
-19        int n = items.size();
-20        mini=items[0][1];
-21        vec.resize(n,vector<int> (budget+1,-1));
-22            for(int i=0; i<n; i++) {
-23            mini=min(mini, items[i][1]);
-24            for(int j=0; j<n; j++) {
-25                if(items[j][0]%items[i][0] == 0) copis[i]++;
-26            }
-27        }
-28
-29
-30       return fnc(items.size()-1,budget,copis,items);
-31    }
-32};
+3    vector<int> free;
+4    vector<vector<array<int, 2>>> memo;
+5
+6    int func(int i, vector<vector<int>>& items, int budget, int frst) {
+7
+8        if (i == items.size())
+9            return 0;
+10
+11        if (memo[i][budget][frst] != -1)
+12            return memo[i][budget][frst];
+13
+14        int next = func(i + 1, items, budget, 1);
+15
+16        int stay = 0;
+17
+18        if (budget >= items[i][1]) {
+19
+20            if (frst == 1)
+21                stay = free[i];
+22
+23            stay += 1 + func(
+24                i,
+25                items,
+26                budget - items[i][1],
+27                0
+28            );
+29        }
+30
+31        return memo[i][budget][frst] = max(stay, next);
+32    }
+33
+34    int maximumSaleItems(vector<vector<int>>& items, int budget) {
+35
+36        int n = items.size();
+37
+38        free.assign(n, 0);
+39
+40        memo.assign(
+41            n,
+42            vector<array<int, 2>>(budget + 1, array<int, 2>{-1, -1})
+43        );
+44
+45        for (int i = 0; i < n; i++) {
+46            for (int j = 0; j < n; j++) {
+47
+48                if (i != j &&
+49                    items[j][0] % items[i][0] == 0) {
+50
+51                    free[i]++;
+52                }
+53            }
+54        }
+55
+56        return func(0, items, budget, 1);
+57    }
+58};
