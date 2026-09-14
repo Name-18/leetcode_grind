@@ -1,59 +1,68 @@
-// Last updated: 9/14/2026, 1:44:38 PM
+// Last updated: 9/14/2026, 1:46:11 PM
 1class Solution {
 2public:
 3    vector<int> free;
-4    vector<vector<array<int, 2>>> memo;
+4    vector<int> memo;
 5
-6    int func(int i, vector<vector<int>>& items, int budget, int frst) {
+6    int n, B;
 7
-8        if (i == items.size())
-9            return 0;
-10
-11        if (memo[i][budget][frst] != -1)
-12            return memo[i][budget][frst];
+8    int id(int i, int budget, int first) {
+9        return (i * (B + 1) + budget) * 2 + first;
+10    }
+11
+12    int func(int i, vector<vector<int>>& items, int budget, int first) {
 13
-14        int next = func(i + 1, items, budget, 1);
-15
-16        int stay = 0;
-17
-18        if (budget >= items[i][1]) {
-19
-20            if (frst == 1)
-21                stay = free[i];
-22
-23            stay += 1 + func(
-24                i,
-25                items,
-26                budget - items[i][1],
-27                0
-28            );
-29        }
-30
-31        return memo[i][budget][frst] = max(stay, next);
-32    }
-33
-34    int maximumSaleItems(vector<vector<int>>& items, int budget) {
-35
-36        int n = items.size();
-37
-38        free.assign(n, 0);
-39
-40        memo.assign(
-41            n,
-42            vector<array<int, 2>>(budget + 1, array<int, 2>{-1, -1})
-43        );
-44
-45        for (int i = 0; i < n; i++) {
-46            for (int j = 0; j < n; j++) {
-47
-48                if (i != j &&
-49                    items[j][0] % items[i][0] == 0) {
+14        if (i == n)
+15            return 0;
+16
+17        int idx = id(i, budget, first);
+18
+19        if (memo[idx] != -1)
+20            return memo[idx];
+21
+22        // Don't buy this item
+23        int skip = func(i + 1, items, budget, 1);
+24
+25        int buy = 0;
+26
+27        if (budget >= items[i][1]) {
+28
+29            // First copy gives free items
+30            if (first == 1)
+31                buy = free[i];
+32
+33            buy += 1 + func(
+34                i,
+35                items,
+36                budget - items[i][1],
+37                0
+38            );
+39        }
+40
+41        return memo[idx] = max(skip, buy);
+42    }
+43
+44    int maximumSaleItems(vector<vector<int>>& items, int budget) {
+45
+46        n = items.size();
+47        B = budget;
+48
+49        free.assign(n, 0);
 50
-51                    free[i]++;
-52                }
-53            }
-54        }
-55
-56        return func(0, items, budget, 1);
-57    }
-58};
+51        for (int i = 0; i < n; i++) {
+52            for (int j = 0; j < n; j++) {
+53
+54                if (i != j &&
+55                    items[i][0] != 0 &&
+56                    items[j][0] % items[i][0] == 0) {
+57
+58                    free[i]++;
+59                }
+60            }
+61        }
+62
+63        memo.assign(n * (budget + 1) * 2, -1);
+64
+65        return func(0, items, budget, 1);
+66    }
+67};
