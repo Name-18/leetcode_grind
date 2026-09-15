@@ -1,0 +1,33 @@
+// Last updated: 9/15/2026, 10:53:54 PM
+1class Solution {
+2public:
+3
+4  bool bi(int i , vector<vector<int>> &adj , int c ,vector<int> &vis){
+5          vis[i] = c;
+6
+7          for(auto &it : adj[i]){
+8
+9            if(vis[it] == -1){
+10
+11                if(bi(it , adj , c^1,vis)) return true;
+12            }else if(vis[it] == c){
+13                return true;
+14            }
+15          }
+16return false;
+17  }
+18    bool isBipartite(vector<vector<int>>& adj) {
+19        int n = adj.size();
+20      vector<int> vis(n,-1);
+21       
+22     
+23            for (int i = 0; i < n; i++) {
+24            if (vis[i] == -1) {
+25                if (bi(i, adj, 0, vis))
+26                    return false;
+27            }
+28        }
+29
+30        return true;
+31    }
+32};
